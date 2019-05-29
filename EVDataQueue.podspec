@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "EVDataQueue"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "FIFO iOS queue with high performance."
 
   # This description is used to generate tags and improve search results.
