@@ -100,6 +100,8 @@ static const dispatch_time_t EV_QUEUE_TIME_OUT = 0.5; //信号量超时时间(�
     
     id obj = (__bridge_transfer id)(_front -> value);
     struct EVQueueNode *next = _front -> next;
+    _front -> value = NULL;
+    _front -> next = NULL;
     free(_front);
     _front = next;
     
