@@ -14,7 +14,7 @@
      //    arr[0] = p;
 ```
 ## Install with cocoapods
-pod 'EVDataQueue', '~> 0.0.1'
+pod 'EVDataQueue'
 ## API
 ```
 @interface EVDataQueue<ElementType> : NSObject
