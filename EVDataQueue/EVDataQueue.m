@@ -10,10 +10,10 @@
 
 struct EVQueueNode {
     void *value;
-    struct EVQueueNode *next; 
+    struct EVQueueNode *next;
 } ;
 
-static const dispatch_time_t EV_QUEUE_TIME_OUT = 0.5; //信号量超时时间(单位：s)
+static const dispatch_time_t EV_QUEUE_TIME_OUT = DISPATCH_TIME_FOREVER; //信号量超时时间
 
 @interface EVDataQueue ()
 {
@@ -45,7 +45,7 @@ static const dispatch_time_t EV_QUEUE_TIME_OUT = 0.5; //信号量超时时间(�
 }
 
 - (BOOL)isEmpty {
-    if (_size <= 0) {
+    if (_front == NULL || _rear == NULL || _size <= 0) {
         return YES;
     }
     return NO;
@@ -70,13 +70,11 @@ static const dispatch_time_t EV_QUEUE_TIME_OUT = 0.5; //信号量超时时间(�
     node -> value = (__bridge_retained void *)obj;
     node -> next = NULL;
     
-    if (_front == NULL) {
+    if (_front == NULL || _rear == NULL || _size <= 0) {
         _front = node;
-    }
-    
-    if (_rear == NULL) {
         _rear = node;
-    } else {
+    }
+    else {
         _rear -> next = node;
         _rear = node;
     }
@@ -92,23 +90,19 @@ static const dispatch_time_t EV_QUEUE_TIME_OUT = 0.5; //信号量超时时间(�
     dispatch_semaphore_wait(_semaphore, EV_QUEUE_TIME_OUT);
     
     if ([self isEmpty]) {
-        _front = NULL;
-        _rear = NULL;
         dispatch_semaphore_signal(_semaphore);
         return nil;
     }
     
     id obj = (__bridge_transfer id)(_front -> value);
     struct EVQueueNode *next = _front -> next;
-    _front -> value = NULL;
-    _front -> next = NULL;
     free(_front);
     _front = next;
     
     _size--;
     
     dispatch_semaphore_signal(_semaphore);
-
+    
     return obj;
 }
 
@@ -125,6 +119,7 @@ static const dispatch_time_t EV_QUEUE_TIME_OUT = 0.5; //信号量超时时间(�
         _front = _front -> next;
         free(tmp);
     }
+    _rear = NULL;
     
     dispatch_semaphore_signal(_semaphore);
 }
